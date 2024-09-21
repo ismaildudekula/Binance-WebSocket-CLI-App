@@ -1,90 +1,99 @@
-Overview
-This Java-based command-line application connects to Binance's WebSocket API to fetch real-time market depth data for BTC/USDT. It allows users to set buy and sell trigger prices, simulates placing orders when the trigger prices are hit, and cancels them if the price moves away from the prepared order price. This is a simulation, meaning that no real orders are sent to Binance, but the app logs the payloads as if orders were prepared.
+# Binance WebSocket CLI Application
 
-Features
-Real-time BTC/USDT best bid and ask price updates.
-Simulates buy and sell order preparation when specific trigger prices are hit.
-Cancels prepared orders if the price moves away from the triggered price.
-Displays a clean, continuously updated console output with market data.
-Uses the WebSocket protocol to stream data in real-time, providing low-latency price updates.
-Prerequisites
-Java 8 or above.
-Maven (for dependency management).
-Internet connection (to connect to Binance WebSocket API).
-Setup Instructions
+## Overview
+
+This is a Java-based command-line application that connects to Binance's WebSocket API to fetch real-time market depth data for BTC/USDT. Users can set buy and sell trigger prices, simulate order placement when those prices are hit, and cancel the orders if the price moves away from the prepared order price. **No real orders are sent to Binance**, but the app logs the payloads for simulation purposes.
+
+## Features
+
+- Real-time BTC/USDT best bid and ask price updates.
+- Simulates buy and sell order preparation when trigger prices are hit.
+- Cancels prepared orders if the price moves away from the triggered price.
+- Clean console output with continuous updates.
+- Uses WebSocket for low-latency, real-time price updates.
+
+## Installation
+
 1. Clone the repository:
-bash
-Copy code
-git clone https://github.com/yourusername/BinanceWebSocketClient.git
-cd BinanceWebSocketClient
-2. Build the application:
-Use Maven to build the application:
+   ```bash
+   https://github.com/ismaildudekula/Binance-WebSocket-CLI-App.git
+   cd Binance-WebSocket_CLI-App
+   ```
 
-bash
-Copy code
-mvn clean install
-3. Run the application:
-Once built, you can run the application using:
+2. Ensure you have Java installed. You can check your version with:
+   ```bash
+   java -version
+   ```
 
-bash
-Copy code
-java -jar target/BinanceWebSocketClient.jar
-4. Operation:
-When the program starts, you will be prompted to enter:
+3. Install Maven if you don't already have it. You can verify your Maven installation with:
+   ```bash
+   mvn -version
+   ```
 
-A Buy Trigger Price (the price at which you want to simulate a buy order).
-A Sell Trigger Price (the price at which you want to simulate a sell order).
-The application will connect to the Binance WebSocket server and stream BTC/USDT price updates in real time.
+4. Build the project using Maven:
+   ```bash
+   mvn clean install
+   ```
 
-When the best ask price reaches or drops below the buy trigger price, a simulated buy order will be prepared. If the price rises above the buy trigger, the order will be canceled.
+## Running the Application
 
-When the best bid price reaches or rises above the sell trigger price, a simulated sell order will be prepared. If the price drops below the sell trigger, the order will be canceled.
+To run the application, execute the following command:
+```bash
+mvn exec:java -Dexec.mainClass="org.ismail.MyWebSocketClient"
+```
 
-5. Stop the application:
-To stop the application, simply press Ctrl + C in your terminal or close the terminal window.
+The application will prompt you to enter:
+- **Buy Trigger Price**
+- **Sell Trigger Price**
 
-Design Decisions
-1. WebSocket Client:
-The application uses org.java_websocket.client.WebSocketClient from the Java-WebSocket library to connect to Binance's WebSocket API. This provides a lightweight and straightforward way to subscribe to real-time market depth data.
+Once entered, it will connect to Binance and start receiving real-time price updates. It will monitor the price and simulate buy/sell orders when the conditions are met.
 
-2. Real-time Market Data:
-The application subscribes to the Binance btcusdt@depth stream to fetch the best bid and ask prices in real-time. This data is continuously processed to check against the user's buy/sell triggers.
+### Sample Interaction:
 
-3. Simulated Orders:
-Instead of placing real buy/sell orders via Binance’s REST API, the app logs the prepared payloads when trigger prices are met. This is a simulation for educational purposes or strategy testing without risking real funds.
+```bash
+Enter Buy Trigger Price: 63000.00
+Enter Sell Trigger Price: 64000.00
 
-4. Console Output:
-The console output is dynamically updated using ANSI escape codes to clear the screen and display the latest market data. This provides a clean and user-friendly display, simulating a dashboard interface.
+[INFO] Connected to Binance WebSocket.
+[INFO] Subscription message sent: {"method":"SUBSCRIBE","params":["btcusdt@depth"],"id":1}
+=================================
+Real-Time Market Data for BTC/USDT
+=================================
+Buy Trigger Price: 63000.00
+Sell Trigger Price: 64000.00
+=================================
+Last Payload Buy Price: 62994.15000000
+Last Payload Sell Price: 63065.45000000
+=================================
+Best Ask Price: 63010.00
+Best Bid Price: 62950.00
+=================================
+[INFO] Buy trigger hit! Preparing BUY order payload...
+[INFO] Prepared Buy Order Payload: {"symbol":"BTCUSDT","side":"BUY","type":"LIMIT","price":"63000.00","quantity":"0.001","timeInForce":"GTC","orderId":"uuid-1234"}
+```
+## 1. Start - Subscribe - BUY TRIGGER EXAMPLE
+![1 start - buy trigger - edit](https://github.com/user-attachments/assets/8ffa7484-7972-4b58-8d3e-f142c619d66a)
 
-5. Trigger-Based Logic:
-The application monitors the real-time best bid and ask prices. When the market price reaches the user's predefined buy or sell trigger prices, the app prepares an order payload and logs it. If the price moves away from the trigger price, the prepared order is "canceled" and a new order can be prepared if the trigger condition is met again.
+## 2. Cancelling Buy Payload (if best ask becomes lower than previous payload) and Re-making Buy Payload (according to new price)
+![2  cancel Buy - re buy - edit](https://github.com/user-attachments/assets/04ee2501-353e-4464-8760-96ace167e080)
 
-Libraries Used
-Java-WebSocket (org.java-websocket): A Java library used to create WebSocket clients and servers. It handles the WebSocket connection, parsing messages, and sending requests. It is lightweight and fits well with applications requiring real-time data.
+## 3. Sell Trigger Example
+![3  Trigger Sell - edit](https://github.com/user-attachments/assets/5d550af9-d288-4f2c-ab66-1023370aa826)
 
-Maven dependency:
+##  4. Cancelling Sell Payload (if best bid becomes higher than previous payload) and Re-making Sell Payload (according to new price)
+![4  Cancel Sell - re create sell payload - edit](https://github.com/user-attachments/assets/46e8de82-6d63-44a8-b123-24b37e885b5d)
 
-xml
-Copy code
-<dependency>
-  <groupId>org.java-websocket</groupId>
-  <artifactId>Java-WebSocket</artifactId>
-  <version>1.5.2</version>
-</dependency>
-Gson (com.google.gson): Used for parsing and handling JSON data, which is the format used by Binance WebSocket for incoming market data.
+## Design Decisions
 
-Maven dependency:
+- **WebSocket Client:** Used `org.java_websocket.client.WebSocketClient` to establish a low-latency, persistent connection to Binance's WebSocket API.
+- **Gson Library:** This is used to parse incoming JSON data from Binance and prepare JSON payloads for simulated orders.
+- **Trigger Logic:** The buy trigger is hit when the **best ask price** is less than or equal to the buy trigger price, and the sell trigger is hit when the **best bid price** is greater than or equal to the sell trigger price. Prepared orders are canceled if the price moves outside the trigger conditions.
 
-xml
-Copy code
-<dependency>
-  <groupId>com.google.code.gson</groupId>
-  <artifactId>gson</artifactId>
-  <version>2.8.8</version>
-</dependency>
+## Libraries Used
 
-Future Enhancements
-Implement real buy/sell order placement using Binance's REST API.
-Add support for multiple trading pairs.
-Incorporate more advanced order types (e.g., stop-limit, market).
-Implement automated trading strategies based on technical indicators.
+- [Java WebSocket](https://github.com/TooTallNate/Java-WebSocket): For WebSocket communication.
+- [Gson](https://github.com/google/gson): For JSON parsing and manipulation.
+
+## License
+
+This project is licensed under the MIT License.
