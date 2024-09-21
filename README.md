@@ -62,8 +62,8 @@ Real-Time Market Data for BTC/USDT
 Buy Trigger Price: 63000.00
 Sell Trigger Price: 64000.00
 =================================
-Last Payload Buy Price: 62994.15000000
-Last Payload Sell Price: 63065.45000000
+Last Payload Buy Price: 0.000000
+Last Payload Sell Price: 0.000000
 =================================
 Best Ask Price: 63010.00
 Best Bid Price: 62950.00
